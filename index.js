@@ -29,6 +29,7 @@ io.on("connection", (socket) => {
 
   socket.on("resetBell", () => {
     bellData = [];
+    io.emit("resetBell");
     io.emit("updateBellData", bellData);
     console.log("🔄 Admin đã reset danh sách");
   });
