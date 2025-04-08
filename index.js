@@ -39,13 +39,23 @@ io.on("connection", (socket) => {
   socket.on("ringBell", (data) => {
     if (!bellStartTime || (Date.now() - bellStartTime) / 1000 > 30) {
       console.log("⏳ Hết thời gian bấm chuông, bỏ qua:", data.name);
-      return; // Hết thời gian bấm chuông
+      return;
     }
-
-    bellData.push(data);
-    io.emit("updateBellData", bellData); // Cập nhật danh sách người chơi bấm chuông
-    console.log("🔔 Chuông rung:", data.name);
+  
+    // Tính thời gian người dùng bấm chuông (tính từ lúc bắt đầu)
+    const elapsed = ((Date.now() - bellStartTime) / 1000).toFixed(2);
+  
+    const userData = {
+      name: data.name,
+      time: Date.now(),
+      elapsed: parseFloat(elapsed), // số giây kể từ khi bắt đầu
+    };
+  
+    bellData.push(userData);
+    io.emit("updateBellData", bellData);
+    console.log(`🔔 Chuông rung: ${data.name} (${elapsed}s)`);
   });
+  
 
   // Khi admin reset danh sách chuông
   socket.on("resetBell", () => {
